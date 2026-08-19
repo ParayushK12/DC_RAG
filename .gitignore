@@ -1,0 +1,85 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+eggs/
+*.egg-info/
+pip-wheel-metadata/
+*.egg
+*.whl
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage
+htmlcov/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+nosetests.xml
+coverage.xml
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv/
+venv.bak/
+venv3/
+
+# Jupyter
+.ipynb_checkpoints
+
+# dotenv / environment files
+.env
+.env.*
+.env.local
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# macOS / Windows
+.DS_Store
+Thumbs.db
+
+# Node / frontend
+node_modules/
+frontend/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log
+dist/
+frontend/dist/
+build/
+.next/
+out/
+.cache/
+
+# Logs and databases
+*.log
+*.sqlite3
+*.db
+
+# Misc
+*.pdf
+*.docx
+
+# Local IDE run configs and other generated files
+.idea/
+.vscode/
+.pytest_cache/
+
+# Vercel
+.vercel/
+.vercel

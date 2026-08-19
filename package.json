@@ -1,0 +1,27 @@
+{
+  "name": "dc-rag-diagram-generator",
+  "version": "2.0.0",
+  "description": "RAG-Based LLM Diagram Generator using LangChain and Mistral Large",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "python backend/app.py",
+    "dev": "concurrently -n \"BACKEND,FRONTEND\" -c \"blue.bold,cyan.bold\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "build": "cd frontend && npm install && npm run build",
+    "start": "python backend/app.py",
+    "install:all": "npm install && cd frontend && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "rag",
+    "langchain",
+    "mistral",
+    "mermaid",
+    "diagram-generator",
+    "faiss"
+  ],
+  "author": "ParayushK12",
+  "license": "MIT"
+}

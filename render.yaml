@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: dc-rag-diagram-generator
+    env: python
+    buildCommand: "pip install -r backend/requirements.txt && cd frontend && npm install && npm run build"
+    startCommand: "python backend/app.py"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: MISTRAL_API_KEY
+        sync: false
+      - key: PORT
+        value: 10000

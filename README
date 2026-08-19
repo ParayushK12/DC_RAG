@@ -1,0 +1,129 @@
+# DC_RAG — Intelligent Architecture & Workflow Diagram Generator
+
+> **Production-ready RAG system** that converts complex technical documents (PDFs, system specifications, user stories, and architecture notes) into interactive, syntax-validated **Mermaid diagrams** using **LangChain** and **Mistral Large (`mistral-large-latest`)**.
+
+---
+
+## 🌟 Key Features
+
+- **True LangChain RAG Architecture**:
+  - `PyPDFLoader` & `pdfplumber` robust text extraction.
+  - `RecursiveCharacterTextSplitter` for intelligent chunking ($900$ chars, $120$ overlap).
+  - In-memory `FAISS` vector store indexed with `MistralAIEmbeddings(model="mistral-embed")`.
+  - Contextual retrieval and structured diagram synthesis powered by `ChatMistralAI(model="mistral-large-latest")`.
+- **Targeted Query & Auto Modes**:
+  - Auto-generate complete end-to-end system flows.
+  - Or specify targeted RAG focus queries (e.g., *"Focus on the JWT token authentication and Redis cache layer"*).
+- **Multiple Diagram Types**:
+  - Flowcharts (`flowchart TD` / `flowchart LR`), Sequence Diagrams (`sequenceDiagram`), State Machines (`stateDiagram-v2`), and Class Diagrams (`classDiagram`).
+- **Minimalist & Modern Workspace UI**:
+  - Interactive diagram canvas with **Pan, Zoom In/Out, and Reset**.
+  - **Live Mermaid Code Editor** with instant preview re-rendering.
+  - **Structured System Summary** & **Retrieved RAG Chunks Inspector**.
+  - **One-click Export**: Download as high-resolution **PNG**, vector **SVG**, or copy Mermaid code.
+- **Unified Render Deployment**:
+  - Single-service deployment where Flask serves the pre-built React frontend with zero CORS issues.
+
+---
+
+## 🏗️ Architecture Flow
+
+```
+[ PDF Upload / Raw Text ]
+           │
+           ▼
+[ Document Chunking ] (RecursiveCharacterTextSplitter)
+           │
+           ▼
+[ Vector Embedding & Storage ] (MistralAIEmbeddings + FAISS)
+           │
+           ▼
+[ Semantic Similarity Retrieval ] (Top-k Relevant Chunks)
+           │
+           ▼
+[ Mistral Large LLM Synthesis ] (Structured Summary + Mermaid Generator)
+           │
+           ▼
+[ Mermaid Code Auto-Sanitizer ] (Escaping & Syntax Validation)
+           │
+           ▼
+[ Interactive React Canvas ] (Zoom/Pan SVG Render, PNG/SVG Export)
+```
+
+---
+
+## 🚀 Quick Start (Local Development)
+
+### 1. Prerequisites
+- Python 3.10+ (or [uv](https://github.com/astral-sh/uv))
+- Node.js 18+ / npm
+
+### 2. Configure Environment
+Create a `.env` file in the root and in `backend/`:
+```env
+MISTRAL_API_KEY=your_mistral_api_key_here
+PORT=5001
+```
+
+### 3. Install Dependencies
+
+**Backend (using UV):**
+```bash
+uv venv
+uv pip install -r backend/requirements.txt
+```
+
+**Frontend:**
+```bash
+cd frontend
+npm install
+```
+
+### 4. Run Locally
+
+**Option A: Run Both Together (from root)**
+```bash
+npm run dev
+```
+
+**Option B: Run Separately**
+```bash
+# Terminal 1: Backend
+python backend/app.py
+
+# Terminal 2: Frontend
+cd frontend
+npm run dev
+```
+Open `http://localhost:3000` in your browser.
+
+---
+
+## ☁️ Deploying to Render
+
+This repository includes a [`render.yaml`](file:///c:/Users/Parayush/Desktop/BlockDiagram%20RAG-Based%20LLM%20Diagram%20Generator/render.yaml) file for single-service Web Service deployment.
+
+### Steps on Render:
+1. Go to [Render Dashboard](https://dashboard.render.com).
+2. Click **New +** → **Web Service** → Connect your GitHub repository `ParayushK12/DC_RAG`.
+3. Configure the service:
+   - **Environment**: `Python`
+   - **Build Command**:
+     ```bash
+     pip install -r backend/requirements.txt && cd frontend && npm install && npm run build
+     ```
+   - **Start Command**:
+     ```bash
+     python backend/app.py
+     ```
+4. In **Environment Variables**, add:
+   - `MISTRAL_API_KEY`: `your_mistral_api_key`
+   - `PYTHON_VERSION`: `3.12.0`
+5. Click **Deploy**. Render will build the React SPA and start the Flask server which serves both the API and the web interface!
+
+---
+
+## 📄 License & Author
+
+- **Author**: [ParayushK12](https://github.com/ParayushK12)
+- **License**: MIT
