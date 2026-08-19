@@ -200,45 +200,83 @@ export default function App() {
   // Export SVG
   const downloadSVG = () => {
     const svgEl = previewContainerRef.current?.querySelector('svg')
-    if (!svgEl) return
+    if (!svgEl) {
+      setError('Please generate a diagram first before downloading.')
+      return
+    }
     const svgData = new XMLSerializer().serializeToString(svgEl)
     const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
     link.download = `blockdiagram-${Date.now()}.svg`
+    document.body.appendChild(link)
     link.click()
+    document.body.removeChild(link)
     URL.revokeObjectURL(url)
   }
 
   // Export PNG
   const downloadPNG = () => {
     const svgEl = previewContainerRef.current?.querySelector('svg')
-    if (!svgEl) return
-    const svgData = new XMLSerializer().serializeToString(svgEl)
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-    const img = new Image()
-
-    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' })
-    const url = URL.createObjectURL(svgBlob)
-
-    img.onload = () => {
-      const scale = 2
-      canvas.width = (svgEl.clientWidth || 800) * scale
-      canvas.height = (svgEl.clientHeight || 600) * scale
-      ctx.fillStyle = '#16161a'
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-      
-      const pngUrl = canvas.toDataURL('image/png')
-      const link = document.createElement('a')
-      link.href = pngUrl
-      link.download = `blockdiagram-${Date.now()}.png`
-      link.click()
-      URL.revokeObjectURL(url)
+    if (!svgEl) {
+      setError('Please generate a diagram first before downloading.')
+      return
     }
-    img.src = url
+
+    try {
+      const bbox = svgEl.getBoundingClientRect()
+      const viewBox = svgEl.viewBox?.baseVal
+      const width = (viewBox && viewBox.width > 0) ? viewBox.width : (bbox.width || 1200)
+      const height = (viewBox && viewBox.height > 0) ? viewBox.height : (bbox.height || 800)
+
+      // Clone SVG and enforce dimensions and xmlns
+      const clonedSvg = svgEl.cloneNode(true)
+      clonedSvg.setAttribute('width', width)
+      clonedSvg.setAttribute('height', height)
+      clonedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
+
+      const svgString = new XMLSerializer().serializeToString(clonedSvg)
+      const svgBase64 = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgString)
+
+      const img = new Image()
+      img.crossOrigin = 'anonymous'
+
+      img.onload = () => {
+        const scale = 2 // High DPI 2x
+        const canvas = document.createElement('canvas')
+        canvas.width = width * scale
+        canvas.height = height * scale
+        const ctx = canvas.getContext('2d')
+        if (!ctx) return
+
+        ctx.fillStyle = '#16161a'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+
+        canvas.toBlob((blob) => {
+          if (!blob) return
+          const url = URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = `blockdiagram-${Date.now()}.png`
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          URL.revokeObjectURL(url)
+        }, 'image/png')
+      }
+
+      img.onerror = (err) => {
+        console.error('PNG export render error, falling back to SVG:', err)
+        downloadSVG()
+      }
+
+      img.src = svgBase64
+    } catch (e) {
+      console.error('PNG conversion error:', e)
+      downloadSVG()
+    }
   }
 
   return (
